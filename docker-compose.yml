@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootPassword
+      - MONGO_INITDB_DATABASE=cscl
+      - DB_USER=cscl
+      - DB_PASS=SuperSecret
+    volumes:
+      - mongodb_data:/data/db
+      - ./utils/mongo_seed/:/docker-entrypoint-initdb.d/:ro
+  api:
+    build: .
+    container_name: cscl_api
+    ports:
+      - 5000:5000
+    environment:
+      - FLASK_APP=cscl_api
+      - FLASK_ENV=development
+      - CSCL_MONGO_URL=mongodb://mongo
+      - CSCL_MONGO_USER=cscl
+      - CSCL_MONGO_PASS=SuperSecret
+    volumes:
+      - ./cscl_api:/usr/src/app/cscl_api
+volumes:
+  mongodb_data:
